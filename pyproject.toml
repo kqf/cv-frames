@@ -26,4 +26,7 @@ build-backend = "setuptools.build_meta"
 name = "cvframes"
 version = "0.0.1"
 description = "Read frames from OpenCV like humans"
-dependencies = []
+dependencies = [
+    "opencv-python",
+    "numpy"
+]
