@@ -1,7 +1,7 @@
 from pathlib import Path
-import cv2
-
 from typing import Generator, Tuple
+
+import cv2
 import numpy as np
 
 

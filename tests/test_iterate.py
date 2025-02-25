@@ -1,4 +1,5 @@
 import pytest
+
 from cvframes.iterate import iterate_sbs
 
 
