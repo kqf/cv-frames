@@ -59,8 +59,12 @@ def video_data(
 
 def iterate_sbs(
     ipath: Path,
+    start_frame: int = -1,
+    stop_frame: int = -1,
 ) -> Generator[Tuple[np.ndarray, np.ndarray], None, None]:
     capture = cv2.VideoCapture(str(ipath))
+    capture.icap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+    count = start_frame
 
     if not capture.isOpened():
         print(f"Error: Could not open video {ipath}")
@@ -68,8 +72,11 @@ def iterate_sbs(
 
     while True:
         ret, frame = capture.read()
+        count += 1
         if not ret:
-            break  # Properly exit loop when the video ends
+            break
+        if stop_frame > 0 and count >= stop_frame:
+            break
 
         height, width, _ = frame.shape
         mid = width // 2
