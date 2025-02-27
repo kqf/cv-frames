@@ -4,7 +4,8 @@ from typing import Generator, Tuple
 import cv2
 import numpy as np
 
-class IOCapture:
+
+class IOCapture(cv2.VideoCapture):
     def __init__(self, iname: str, oname: str = ""):
         self.icap = cv2.VideoCapture(iname)
         self.ocap = (
