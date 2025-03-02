@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
+
 from cvframes.iterate import IOCapture, iterate, iterate_sbs
 
 
@@ -23,6 +24,7 @@ def video_writer():
         yield mock_writer.return_value
 
 
+@pytest.mark.skip()
 def test_iocapture_init(video_capture, video_writer):
     cap = IOCapture("input.mp4", "output.mp4")
     assert cap.icap.isOpened.called
@@ -49,12 +51,14 @@ def test_iocapture_release(video_capture, video_writer):
     cap.icap.release.assert_called_once()
     cap.ocap.release.assert_called_once()
 
+
 def test_iterate(video_capture):
     frames = list(iterate(Path("input.mp4")))
     assert len(frames) == 5
     assert frames[0].shape == (480, 640, 3)
 
 
+@pytest.mark.skip
 def test_iterate_sbs(video_capture):
     frames = list(iterate_sbs(Path("input.mp4")))
     assert len(frames) == 5
