@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
-from your_module import IOCapture, iterate, iterate_sbs
+
+from cvframes.iterate import IOCapture, iterate, iterate_sbs
 
 
 @pytest.fixture
