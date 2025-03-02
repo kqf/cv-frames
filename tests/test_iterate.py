@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
-from your_module import IOCapture, iterate, iterate_sbs
+from cvframes.iterate import IOCapture, iterate, iterate_sbs
 
 
 @pytest.fixture
@@ -48,7 +48,6 @@ def test_iocapture_release(video_capture, video_writer):
     cap.release()
     cap.icap.release.assert_called_once()
     cap.ocap.release.assert_called_once()
-
 
 def test_iterate(video_capture):
     frames = list(iterate(Path("input.mp4")))
