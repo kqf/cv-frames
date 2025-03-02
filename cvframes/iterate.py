@@ -7,6 +7,36 @@ import numpy as np
 T = TypeVar("T")
 
 
+class IOCapture(cv2.VideoCapture):
+    def __init__(self, iname: str, oname: str = ""):
+        self.icap = cv2.VideoCapture(iname)
+        self.ocap = (
+            cv2.VideoWriter(
+                oname,
+                cv2.VideoWriter_fourcc(*"H264"),
+                self.icap.get(cv2.CAP_PROP_FPS),
+                (
+                    int(self.icap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                    int(self.icap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+                ),
+            )
+            if oname
+            else None
+        )
+
+    def read(self):
+        return self.icap.read()
+
+    def write(self, frame):
+        if self.ocap is not None:
+            self.ocap.write(frame)
+
+    def release(self):
+        self.icap.release()
+        if self.ocap is not None:
+            self.ocap.release()
+
+
 def iterate_generic(
     ipath: Path,
     start_frame: int,
