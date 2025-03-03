@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Generator, Tuple, TypeVar
+from typing import Callable, Generator, Optional, Tuple, TypeVar
 
 import cv2
 import numpy as np
@@ -39,11 +39,12 @@ class IOCapture(cv2.VideoCapture):
 
 def iterate_generic(
     ipath: Path,
+    opath: Optional[Path],
     start_frame: int,
     stop_frame: int,
     process_frames: Callable[[np.ndarray], T],
 ) -> Generator[T, None, None]:
-    capture = cv2.VideoCapture(str(ipath))
+    capture = IOCapture(str(ipath), str(opath) or "")
     capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
 
@@ -67,17 +68,25 @@ def iterate_generic(
 
 def iterate(
     ipath: Path,
+    opath: Optional[Path] = None,
     start_frame: int = -1,
     stop_frame: int = -1,
 ) -> Generator[np.ndarray, None, None]:
     def processor(frame: np.ndarray) -> np.ndarray:
         return frame
 
-    return iterate_generic(ipath, start_frame, stop_frame, processor)
+    return iterate_generic(
+        ipath,
+        opath,
+        start_frame,
+        stop_frame,
+        processor,
+    )
 
 
 def iterate_sbs(
     ipath: Path,
+    opath: Optional[Path] = None,
     start_frame: int = -1,
     stop_frame: int = -1,
 ) -> Generator[Tuple[np.ndarray, np.ndarray], None, None]:
@@ -88,4 +97,10 @@ def iterate_sbs(
         rimage = frame[:, mid:, :]
         return limage, rimage
 
-    return iterate_generic(ipath, start_frame, stop_frame, processor)
+    return iterate_generic(
+        ipath,
+        opath,
+        start_frame,
+        stop_frame,
+        processor,
+    )
