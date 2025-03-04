@@ -12,10 +12,19 @@ from cvframes.iterate import IOCapture, iterate, iterate_sbs
 def video_capture():
     cv2.setNumThreads(0)
     cv2.ocl.setUseOpenCL(False)
+
+    def _get(option):
+        if option == cv2.CAP_PROP_FPS:
+            return 30
+        if option == cv2.CAP_PROP_FRAME_WIDTH:
+            return 640
+        if option == cv2.CAP_PROP_FRAME_HEIGHT:
+            return 480
+
     with patch("cv2.VideoCapture") as mock_capture:
         instance = mock_capture.return_value
         instance.isOpened.return_value = True
-        instance.get.side_effect = 30.0
+        instance.get.side_effect = _get
         instance.read.side_effect = [
             (True, np.zeros((480, 640, 3), dtype=np.uint8))
         ] * 5 + [(False, None)]
