@@ -8,11 +8,11 @@ T = TypeVar("T")
 
 
 class IOCapture(cv2.VideoCapture):
-    def __init__(self, iname: str, oname: str = ""):
+    def __init__(self, iname: str, oname: str | Path = ""):
         self.icap = cv2.VideoCapture(iname)
         self.ocap = (
             cv2.VideoWriter(
-                oname,
+                str(oname),
                 cv2.VideoWriter_fourcc(*"H264"),
                 self.icap.get(cv2.CAP_PROP_FPS),
                 (
@@ -44,7 +44,7 @@ def iterate_generic(
     stop_frame: int,
     process_frames: Callable[[np.ndarray], T],
 ) -> Generator[T, None, None]:
-    capture = IOCapture(str(ipath), str(opath) or "")
+    capture = IOCapture(str(ipath), opath or "")
     capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
 
