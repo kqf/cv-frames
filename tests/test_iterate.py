@@ -75,7 +75,6 @@ def test_iterate(video_capture):
     assert frames[0].shape == (480, 640, 3)
 
 
-@pytest.mark.skip
 def test_iterate_sbs(video_capture):
     frames = list(iterate_sbs(Path("input.mp4")))
     assert len(frames) == 5
