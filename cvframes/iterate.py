@@ -45,7 +45,7 @@ def iterate_generic(
     process_frames: Callable[[np.ndarray], T],
 ) -> Generator[T, None, None]:
     capture = IOCapture(str(ipath), opath or "")
-    capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+    capture.icap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
 
     if not capture.isOpened():
