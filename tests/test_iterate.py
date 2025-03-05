@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import pytest
 
-from cvframes.iterate import IOCapture, iterate, iterate_sbs
+from cvframes.iterate import iterate, iterate_sbs
 
 
 @pytest.fixture
@@ -35,29 +35,6 @@ def video_capture():
 def video_writer():
     with patch("cv2.VideoWriter") as mock_writer:
         yield mock_writer.return_value
-
-
-@pytest.mark.skip()
-def test_iocapture_init(video_capture, video_writer):
-    cap = IOCapture("input.mp4", "output.mp4")
-    assert cap.icap.isOpened.called
-    assert cap.ocap is not None
-
-
-@pytest.mark.skip()
-def test_iocapture_read(video_capture):
-    cap = IOCapture("input.mp4")
-    ret, frame = cap.read()
-    assert ret is True
-    assert frame.shape == (480, 640, 3)
-
-
-@pytest.mark.skip()
-def test_iocapture_write(video_writer):
-    cap = IOCapture("input.mp4", "output.mp4")
-    frame = np.zeros((480, 640, 3), dtype=np.uint8)
-    cap.write(frame)
-    cap.ocap.write.assert_called_once_with(frame)
 
 
 @pytest.mark.skip()
