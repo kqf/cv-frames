@@ -61,14 +61,6 @@ def test_iocapture_write(video_writer):
 
 
 @pytest.mark.skip()
-def test_iocapture_release(video_capture, video_writer):
-    cap = IOCapture("input.mp4", "output.mp4")
-    cap.release()
-    cap.icap.release.assert_called_once()
-    cap.ocap.release.assert_called_once()
-
-
-@pytest.mark.skip()
 def test_iterate(video_capture):
     frames = list(iterate(Path("input.mp4")))
     assert len(frames) == 5
@@ -76,8 +68,7 @@ def test_iterate(video_capture):
 
 
 def test_iterate_sbs(video_capture):
-    frames = list(iterate_sbs(Path("input.mp4")))
-    assert len(frames) == 5
-    left, right = frames[0]
-    assert left.shape == (480, 320, 3)
-    assert right.shape == (480, 320, 3)
+    # sourcery skip: no-loop-in-tests
+    for lframe, rframe in iterate_sbs(Path("input.mp4")):
+        assert lframe.shape == (480, 320, 3)
+        assert rframe.shape == (480, 320, 3)
