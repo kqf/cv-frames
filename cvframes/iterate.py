@@ -13,7 +13,7 @@ class IOCapture(cv2.VideoCapture):
         self.ocap = (
             cv2.VideoWriter(
                 str(oname),
-                cv2.VideoWriter_fourcc(*"H264"),
+                cv2.VideoWriter_fourcc(*"mp4v"),
                 self.icap.get(cv2.CAP_PROP_FPS),
                 (
                     int(self.icap.get(cv2.CAP_PROP_FRAME_WIDTH)),
