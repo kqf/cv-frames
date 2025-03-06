@@ -24,6 +24,9 @@ class IOCapture(cv2.VideoCapture):
             else None
         )
 
+    def isOpened(self) -> bool:
+        return self.icap.isOpened()
+
     def read(self):
         return self.icap.read()
 
