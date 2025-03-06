@@ -21,7 +21,7 @@ def video_capture():
         if option == cv2.CAP_PROP_FRAME_HEIGHT:
             return 480
 
-    with patch("cv2.VideoCapture") as mock_capture:
+    with patch("cvframes.iterate.cv2.VideoCapture") as mock_capture:
         instance = mock_capture.return_value
         instance.isOpened.return_value = True
         instance.get.side_effect = _get
@@ -33,7 +33,7 @@ def video_capture():
 
 @pytest.fixture
 def video_writer():
-    with patch("cv2.VideoWriter") as mock_writer:
+    with patch("cvframes.iterate.cv2.VideoWriter") as mock_writer:
         yield mock_writer.return_value
 
 
