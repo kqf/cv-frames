@@ -17,6 +17,9 @@ ignore = [
     "E203", # Whitespace before ':'
     "W503", # Line break before binary operator
 ]
+[tool.pytest.ini_options]
+addopts = "--cov=cvframes --cov-report=term-missing"
+
 
 [build-system]
 requires = ["setuptools", "wheel"]
