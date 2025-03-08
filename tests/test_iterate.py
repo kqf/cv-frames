@@ -47,5 +47,6 @@ def test_iterate(video_capture):
 def test_iterate_sbs(video_capture):
     # sourcery skip: no-loop-in-tests
     for lframe, rframe in iterate_sbs(Path("input.mp4")):
+        print("Here")
         assert lframe.shape == (480, 320, 3)
         assert rframe.shape == (480, 320, 3)
