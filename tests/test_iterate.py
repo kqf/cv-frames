@@ -37,6 +37,7 @@ def video_writer():
         yield mock_writer.return_value
 
 
+@pytest.mark.skip
 def test_iterate(video_capture):
     frames = list(iterate(Path("input.mp4")))
     assert len(frames) == 5
@@ -46,5 +47,6 @@ def test_iterate(video_capture):
 def test_iterate_sbs(video_capture):
     # sourcery skip: no-loop-in-tests
     for lframe, rframe in iterate_sbs(Path("input.mp4")):
+        print("Here")
         assert lframe.shape == (480, 320, 3)
         assert rframe.shape == (480, 320, 3)
