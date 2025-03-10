@@ -37,7 +37,6 @@ def video_writer():
         yield mock_writer.return_value
 
 
-@pytest.mark.skip
 def test_iterate(video_capture):
     frames = list(iterate(Path("input.mp4")))
     assert len(frames) == 5
