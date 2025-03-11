@@ -22,9 +22,9 @@ jobs:
           pip install -r requirements.txt
           pip install -e .
 
-      - name: Run the tests
-        run: |
-          pytest --cov=cvframes tests/
-
       - name: Run pre-commit checks
         uses: pre-commit/action@v3.0.1
+
+      - name: Run the tests
+        run: |
+          pytest tests/
