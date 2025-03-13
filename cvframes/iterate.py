@@ -7,7 +7,7 @@ import numpy as np
 T = TypeVar("T")
 
 
-class IOCapture(cv2.VideoCapture):
+class IOCapture:
     def __init__(self, iname: str, oname: str | Path = ""):
         self.icap = cv2.VideoCapture(iname)
         self.ocap = (
