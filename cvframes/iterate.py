@@ -7,35 +7,29 @@ import numpy as np
 T = TypeVar("T")
 
 
-class IOCapture:
-    def __init__(self, iname: str, oname: str | Path = ""):
-        self.icap = cv2.VideoCapture(iname)
+class IOCapture(cv2.VideoCapture):
+    def __init__(self, *args, oname: str | Path = "", **kwargs):
+        super().__init__(*args, **kwargs)
         self.ocap = (
             cv2.VideoWriter(
                 str(oname),
                 cv2.VideoWriter_fourcc(*"mp4v"),
-                self.icap.get(cv2.CAP_PROP_FPS),
+                super().get(cv2.CAP_PROP_FPS),
                 (
-                    int(self.icap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                    int(self.icap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+                    int(super().get(cv2.CAP_PROP_FRAME_WIDTH)),
+                    int(super().get(cv2.CAP_PROP_FRAME_HEIGHT)),
                 ),
             )
             if oname
             else None
         )
 
-    def isOpened(self) -> bool:
-        return self.icap.isOpened()
-
-    def read(self):
-        return self.icap.read()
-
     def write(self, frame):
         if self.ocap is not None:
             self.ocap.write(frame)
 
     def release(self):
-        self.icap.release()
+        super().release()
         if self.ocap is not None:
             self.ocap.release()
 
@@ -47,8 +41,8 @@ def iterate_generic(
     stop_frame: int,
     process_frames: Callable[[np.ndarray], T],
 ) -> Generator[T, None, None]:
-    capture = IOCapture(str(ipath), opath or "")
-    capture.icap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+    capture = IOCapture(str(ipath), oname=opath or "")
+    capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
 
     if not capture.isOpened():
