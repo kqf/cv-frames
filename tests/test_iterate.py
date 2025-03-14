@@ -21,7 +21,7 @@ def video_capture():
         if option == cv2.CAP_PROP_FRAME_HEIGHT:
             return 480
 
-    with patch("cvframes.iterate.cv2.VideoCapture") as mock_capture:
+    with patch("cvframes.iterate.IOCapture") as mock_capture:
         instance = mock_capture.return_value
         instance.isOpened.return_value = True
         instance.get.side_effect = _get
