@@ -46,9 +46,7 @@ def iterate_generic(
     count = start_frame
 
     if not capture.isOpened():
-        print(f"Error: Could not open video {ipath}")
         return
-    print("->")
 
     try:
         while True:
