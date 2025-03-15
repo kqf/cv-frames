@@ -24,7 +24,7 @@ jobs:
 
       - name: Run the tests
         run: |
-          pytest -s --cov=cvframes tests/
+          pytest --cov=cvframes --cov-report term-missing tests/
 
       - name: Run pre-commit checks
         uses: pre-commit/action@v3.0.1
