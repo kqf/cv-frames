@@ -37,8 +37,15 @@ def video_writer():
         yield mock_writer.return_value
 
 
-def test_iterate(video_capture):
-    frames = list(iterate(Path("input.mp4")))
+@pytest.mark.parametrize(
+    "opath",
+    [
+        "",
+        "output.mp4",
+    ],
+)
+def test_iterate(video_capture, opath):
+    frames = list(iterate(Path("input.mp4"), opath=Path(opath)))
     assert len(frames) == 5
     assert frames[0].shape == (480, 640, 3)
 
