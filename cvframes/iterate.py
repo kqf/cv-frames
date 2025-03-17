@@ -40,7 +40,7 @@ def iterate_generic(
     start_frame: int,
     stop_frame: int,
     process_frames: Callable[[np.ndarray], T],
-) -> Generator[T, None, None]:
+) -> Generator[tuple[IOCapture, T], None, None]:
     capture = IOCapture(str(ipath), oname=opath or "")
     capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
@@ -57,7 +57,7 @@ def iterate_generic(
             if stop_frame > 0 and count >= stop_frame:
                 break
 
-            yield process_frames(frame)
+            yield capture, process_frames(frame)
     finally:
         capture.release()
 
@@ -67,7 +67,7 @@ def iterate(
     opath: Optional[Path] = None,
     start_frame: int = -1,
     stop_frame: int = -1,
-) -> Generator[np.ndarray, None, None]:
+) -> Generator[tuple[IOCapture, np.ndarray], None, None]:
     def processor(frame: np.ndarray) -> np.ndarray:
         return frame
 
@@ -85,7 +85,7 @@ def iterate_sbs(
     opath: Optional[Path] = None,
     start_frame: int = -1,
     stop_frame: int = -1,
-) -> Generator[Tuple[np.ndarray, np.ndarray], None, None]:
+) -> Generator[Tuple[IOCapture, Tuple[np.ndarray, np.ndarray]], None, None]:
     def processor(frame: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         _, width, _ = frame.shape
         mid = width // 2
