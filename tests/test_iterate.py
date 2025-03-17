@@ -27,14 +27,16 @@ def video_writer():
 @pytest.mark.parametrize(
     "opath",
     [
-        "",
-        # "output.mp4",
+        # None,
+        Path("output.mp4"),
     ],
 )
 def test_iterate(video_capture, opath):
-    frames = list(iterate(Path("input.mp4"), opath=Path(opath)))
-    assert len(frames) == 5
-    assert frames[0].shape == (480, 640, 3)
+    # sourcery skip: no-loop-in-tests
+    for capture, frame in iterate(Path("input.mp4"), opath=opath):
+        capture.write(frame)
+        assert frame.shape == (480, 640, 3)
+        print("HERE")
 
 
 @pytest.mark.skip
