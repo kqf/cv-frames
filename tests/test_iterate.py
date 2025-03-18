@@ -39,7 +39,6 @@ def test_iterate(video_capture, opath):
         print("HERE")
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "opath",
     [
@@ -49,6 +48,9 @@ def test_iterate(video_capture, opath):
 )
 def test_iterate_sbs(video_capture, opath):
     # sourcery skip: no-loop-in-tests
-    for lframe, rframe in iterate_sbs(Path("input.mp4"), opath=opath):
+    for capture, (lframe, rframe) in iterate_sbs(
+        Path("input.mp4"), opath=opath
+    ):
+        capture.write(lframe)
         assert lframe.shape == (480, 320, 3)
         assert rframe.shape == (480, 320, 3)
