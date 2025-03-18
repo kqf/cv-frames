@@ -44,11 +44,11 @@ def test_iterate(video_capture, opath):
     "opath",
     [
         "",
-        "output.mp4",
+        Path("output.mp4"),
     ],
 )
 def test_iterate_sbs(video_capture, opath):
     # sourcery skip: no-loop-in-tests
-    for lframe, rframe in iterate_sbs(Path("input.mp4"), opath=Path(opath)):
+    for lframe, rframe in iterate_sbs(Path("input.mp4"), opath=opath):
         assert lframe.shape == (480, 320, 3)
         assert rframe.shape == (480, 320, 3)
