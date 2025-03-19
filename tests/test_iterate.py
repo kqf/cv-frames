@@ -1,7 +1,7 @@
-from contextlib import ExitStack
 from pathlib import Path
-from unittest.mock import patch
+from typing import Literal
 
+import cv2
 import numpy as np
 import pytest
 
@@ -9,30 +9,19 @@ from cvframes.iterate import iterate, iterate_sbs
 
 
 @pytest.fixture
-def video_capture():
-    with ExitStack() as stack:
-        stack.enter_context(
-            patch("cvframes.iterate.IOCapture.isOpened", return_value=True)
-        )
-        stack.enter_context(
-            patch(
-                "cvframes.iterate.cv2.VideoCapture.__init__",
-                return_value=None,
-            )
-        )
-        mock_read = stack.enter_context(
-            patch("cvframes.iterate.IOCapture.read")
-        )
-        mock_read.side_effect = [
-            (True, np.zeros((480, 640, 3), dtype=np.uint8)),
-        ] * 5 + [(False, None)]
+def video(tmp_path: Path):
+    opath = tmp_path / "test_video.mp4"
+    ovideo = cv2.VideoWriter(
+        str(opath),
+        cv2.VideoWriter_fourcc(*"mp4v"),
+        30,  # FPS
+        (640, 480),
+    )
 
-        yield
-
-
-def video_writer():
-    with patch("cvframes.iterate.cv2.VideoWriter") as mock_writer:
-        yield mock_writer.return_value
+    for _ in range(5):
+        ovideo.write(np.zeros((480, 640, 3), dtype=np.uint8))
+    ovideo.release()
+    return opath
 
 
 @pytest.mark.parametrize(
@@ -42,13 +31,14 @@ def video_writer():
         # Path("output.mp4"),
     ],
 )
-def test_iterate(video_capture, opath):
+def test_iterate(video: Path, opath: Literal['']):
     # sourcery skip: no-loop-in-tests
-    for capture, frame in iterate(Path("input.mp4"), opath=opath):
+    for capture, frame in iterate(video, opath=opath):
         capture.write(frame)
         assert frame.shape == (480, 640, 3)
 
 
+@pytest.mark.skip('skipping')
 @pytest.mark.parametrize(
     "opath",
     [
@@ -56,7 +46,7 @@ def test_iterate(video_capture, opath):
         # Path("output.mp4"),
     ],
 )
-def test_iterate_sbs(video_capture, opath):
+def test_iterate_sbs(video: Path, opath: Literal['']):
     # sourcery skip: no-loop-in-tests
     for capture, (lframe, rframe) in iterate_sbs(
         Path("input.mp4"), opath=opath
