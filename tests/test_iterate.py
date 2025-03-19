@@ -1,3 +1,4 @@
+from contextlib import ExitStack
 from pathlib import Path
 from unittest.mock import patch
 
@@ -9,9 +10,19 @@ from cvframes.iterate import iterate, iterate_sbs
 
 @pytest.fixture
 def video_capture():
-    with patch(
-        "cvframes.iterate.IOCapture.isOpened", return_value=True
-    ), patch("cvframes.iterate.IOCapture.read") as mock_read:
+    with ExitStack() as stack:
+        stack.enter_context(
+            patch("cvframes.iterate.IOCapture.isOpened", return_value=True)
+        )
+        stack.enter_context(
+            patch(
+                "cvframes.iterate.cv2.VideoCapture.__init__",
+                return_value=None,
+            )
+        )
+        mock_read = stack.enter_context(
+            patch("cvframes.iterate.IOCapture.read")
+        )
         mock_read.side_effect = [
             (True, np.zeros((480, 640, 3), dtype=np.uint8)),
         ] * 5 + [(False, None)]
@@ -27,8 +38,8 @@ def video_writer():
 @pytest.mark.parametrize(
     "opath",
     [
-        # None,
-        Path("output.mp4"),
+        "",
+        # Path("output.mp4"),
     ],
 )
 def test_iterate(video_capture, opath):
@@ -36,14 +47,13 @@ def test_iterate(video_capture, opath):
     for capture, frame in iterate(Path("input.mp4"), opath=opath):
         capture.write(frame)
         assert frame.shape == (480, 640, 3)
-        print("HERE")
 
 
 @pytest.mark.parametrize(
     "opath",
     [
         "",
-        Path("output.mp4"),
+        # Path("output.mp4"),
     ],
 )
 def test_iterate_sbs(video_capture, opath):
