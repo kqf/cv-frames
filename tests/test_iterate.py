@@ -28,7 +28,7 @@ def video(tmp_path: Path):
     "opath",
     [
         None,
-        # Path("output.mp4"),
+        Path("output.mp4"),
     ],
 )
 def test_iterate(video: Path, opath: Optional[Path]):
@@ -43,7 +43,7 @@ def test_iterate(video: Path, opath: Optional[Path]):
     "opath",
     [
         None,
-        # Path("output.mp4"),
+        Path("output.mp4"),
     ],
 )
 def test_iterate_sbs(video: Path, opath: Optional[Path]):
