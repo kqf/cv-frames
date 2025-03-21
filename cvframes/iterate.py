@@ -7,31 +7,40 @@ import numpy as np
 T = TypeVar("T")
 
 
-class IOCapture(cv2.VideoCapture):
-    def __init__(self, *args, oname: str | Path = "", **kwargs):
-        super().__init__(*args, **kwargs)
+class IOCapture:
+    def __init__(self, source: str | Path, oname: str | Path = ""):
+        self.icap = cv2.VideoCapture(str(source))
         self.ocap = (
             cv2.VideoWriter(
                 str(oname),
                 cv2.VideoWriter_fourcc(*"mp4v"),
-                super().get(cv2.CAP_PROP_FPS),
+                self.icap.get(cv2.CAP_PROP_FPS),
                 (
-                    int(super().get(cv2.CAP_PROP_FRAME_WIDTH)),
-                    int(super().get(cv2.CAP_PROP_FRAME_HEIGHT)),
+                    int(self.icap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                    int(self.icap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
                 ),
             )
             if oname
             else None
         )
 
-    def write(self, frame):
+    def is_opened(self) -> bool:
+        return self.icap.isOpened()
+
+    def read(self) -> Tuple[bool, np.ndarray]:
+        return self.icap.read()
+
+    def write(self, frame: np.ndarray) -> None:
         if self.ocap is not None:
             self.ocap.write(frame)
 
-    def release(self):
-        super().release()
+    def release(self) -> None:
+        self.icap.release()
         if self.ocap is not None:
             self.ocap.release()
+
+    def set(self, prop_id: int, value: float) -> None:
+        self.icap.set(prop_id, value)
 
 
 def iterate_generic(
@@ -45,7 +54,7 @@ def iterate_generic(
     capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
 
-    if not capture.isOpened():
+    if not capture.is_opened():
         return
 
     try:
@@ -68,15 +77,12 @@ def iterate(
     start_frame: int = -1,
     stop_frame: int = -1,
 ) -> Generator[tuple[IOCapture, np.ndarray], None, None]:
-    def processor(frame: np.ndarray) -> np.ndarray:
-        return frame
-
     return iterate_generic(
         ipath,
         opath,
         start_frame,
         stop_frame,
-        processor,
+        lambda frame: frame,
     )
 
 
@@ -89,9 +95,7 @@ def iterate_sbs(
     def processor(frame: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         _, width, _ = frame.shape
         mid = width // 2
-        limage = frame[:, :mid, :]
-        rimage = frame[:, mid:, :]
-        return limage, rimage
+        return frame[:, :mid, :], frame[:, mid:, :]
 
     return iterate_generic(
         ipath,
