@@ -35,7 +35,6 @@ dependencies = [
 
 [tool.setuptools]
 packages = ["cvframes"]
-include-package-data = true
 
 [tool.setuptools_scm]
 version_scheme = "post-release"  # Uses Git tags for versioning
