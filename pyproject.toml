@@ -25,7 +25,8 @@ requires = ["setuptools", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cvframes"
+# NB: Keep it the same as in PyPI
+name = "cv-frames"
 dynamic = ["version"]
 description = "Read frames from OpenCV like humans"
 dependencies = [
