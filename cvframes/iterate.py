@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Generator, Optional, Tuple, TypeVar
+from typing import Callable, Generator, Optional, Tuple, TypeVar, Union
 
 import cv2
 import numpy as np
@@ -8,7 +8,7 @@ T = TypeVar("T")
 
 
 class IOCapture:
-    def __init__(self, source: str | Path, oname: str | Path = ""):
+    def __init__(self, source: Union[str, Path], oname: Union[str, Path] = ""):
         self.icap = cv2.VideoCapture(str(source))
         self.ocap = (
             cv2.VideoWriter(
@@ -49,7 +49,7 @@ def iterate_generic(
     start_frame: int,
     stop_frame: int,
     process_frames: Callable[[np.ndarray], T],
-) -> Generator[tuple[IOCapture, T], None, None]:
+) -> Generator[Tuple[IOCapture, T], None, None]:
     capture = IOCapture(str(ipath), oname=opath or "")
     capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
@@ -76,7 +76,7 @@ def iterate(
     opath: Optional[Path] = None,
     start_frame: int = -1,
     stop_frame: int = -1,
-) -> Generator[tuple[IOCapture, np.ndarray], None, None]:
+) -> Generator[Tuple[IOCapture, np.ndarray], None, None]:
     return iterate_generic(
         ipath,
         opath,
