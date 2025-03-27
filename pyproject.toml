@@ -31,8 +31,12 @@ dynamic = ["version"]
 description = "Read frames from OpenCV like humans"
 dependencies = [
     "opencv-python",
-    "numpy"
+    "numpy",
+    "click",
 ]
+
+[project.scripts]
+cv-frames = "cvframes.cli:main"
 
 [tool.setuptools]
 packages = ["cvframes"]
