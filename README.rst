@@ -1,8 +1,6 @@
 cv-frames
 =========
 
-Read frames from OpenCV like humans.
-
 `cv-frames` is a lightweight utility that simplifies working with video files frame-by-frame using OpenCV. It includes both a Python API and a command-line interface (CLI) for interacting with video frames in an intuitive way.
 
 ----
