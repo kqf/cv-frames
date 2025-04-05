@@ -1,7 +1,16 @@
 cv-frames
 =========
 
-`cv-frames` is a lightweight utility that simplifies working with video files frame-by-frame using OpenCV. It includes both a Python API and a command-line interface (CLI) for interacting with video frames in an intuitive way.
+.. image:: https://github.com/kqf/cv-frames/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/kqf/cv-frames/actions
+   :alt: Tests
+
+.. image:: https://img.shields.io/pypi/dm/cv-frames.svg
+   :target: https://pypi.org/project/cv-frames/
+   :alt: PyPI Downloads
+
+``cv-frames`` is a lightweight utility that simplifies working with video files frame-by-frame using OpenCV.
+It includes both a Python API and a command-line interface (CLI) for interacting with video frames in an intuitive way.
 
 ----
 
