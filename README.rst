@@ -57,8 +57,9 @@ Example: Split side-by-side video into left/right frames
 
     from cvframes import iterate_sbs
 
-    for _, (left, right) in iterate_sbs("sbs_video.mp4"):
-        # Process left and right images separately
-        pass
+    # Write the processed frames to disc
+    for capture, (left, right) in iterate_sbs("sbs_video.mp4", oname="processed.mp4"):
+        processed = do_something(left)
+        capture.write(processed)
 
 ----
