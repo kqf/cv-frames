@@ -15,7 +15,6 @@ except ImportError as e:
 
 import importlib.resources as pkg_resources
 
-
 MAPPING = {
     "ArrowUp": 82,
     "ArrowDown": 84,
@@ -137,8 +136,8 @@ async def websocket_handler(request):
 async def main(http_port: int, tcp_port: int):
     app = web.Application()
 
-    frame_queue = asyncio.Queue()
-    clients = set()
+    frame_queue: asyncio.Queue = asyncio.Queue()
+    clients: set[web.WebSocketResponse] = set()
     clients_lock = asyncio.Lock()
     tcp_send_lock = asyncio.Lock()
     tcp_conn_writer = None
