@@ -29,18 +29,27 @@ build-backend = "setuptools.build_meta"
 name = "cv-frames"
 dynamic = ["version"]
 description = "Read frames from OpenCV like humans"
+readme = "README.rst"
+
 dependencies = [
     "opencv-python",
     "numpy",
     "click",
 ]
-readme = "README.rst"
+
+[project.optional-dependencies]
+web = ["aiohttp"]
 
 [project.scripts]
 cv-frames = "cvframes.cli:main"
 
 [tool.setuptools]
-packages = ["cvframes"]
+packages = [
+    "cvframes",
+    "cvframes.web",
+    "cvframes.web.static",
+]
+include-package-data = true
 
 [tool.setuptools_scm]
 version_scheme = "post-release"  # Uses Git tags for versioning
