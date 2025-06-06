@@ -1,3 +1,5 @@
+import asyncio
+
 import click
 import cv2
 
@@ -22,3 +24,14 @@ def show(filepath):
             break
 
     cv2.destroyAllWindows()
+
+
+@main.command(name="server")
+@click.option(
+    "--http-port", default=8000, help="Port for HTTP/WebSocket server."
+)
+@click.option("--tcp-port", default=9999, help="Port for TCP frame source.")
+def run(http_port, tcp_port):
+    from cvframes.web.server import main
+
+    asyncio.run(main(http_port, tcp_port))
