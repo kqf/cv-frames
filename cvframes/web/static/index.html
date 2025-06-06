@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Live Stream</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            /* background: #255; */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+        }
+
+        #stream-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #stream {
+            max-width: 100%;
+            max-height: 100vh;
+            height: auto;
+            width: auto;
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        #waiting-message {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: none;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="stream-container">
+        <img id="stream" />
+        <div id="waiting-message">Waiting for video...</div>
+    </div>
+
+    <script>
+        const ws = new WebSocket("ws://" + location.host + "/ws");
+        const img = document.getElementById("stream");
+        const waitingMessage = document.getElementById("waiting-message");
+
+        ws.binaryType = "arraybuffer";
+
+        function showPlaceholder() {
+            img.style.opacity = "0.3";
+            waitingMessage.style.display = "block";
+        }
+
+        function hidePlaceholder() {
+            img.style.opacity = "1";
+            waitingMessage.style.display = "none";
+        }
+
+        ws.onmessage = (event) => {
+            if (typeof event.data === "string") {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === "waiting") {
+                        showPlaceholder();
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("Invalid message:", event.data);
+                }
+            } else if (event.data instanceof ArrayBuffer) {
+                const blob = new Blob([event.data], { type: "image/jpeg" });
+                img.src = URL.createObjectURL(blob);
+                hidePlaceholder();
+            }
+        };
+
+        ws.onopen = () => {
+            console.log("Connected to WebSocket");
+
+            document.addEventListener("keydown", (e) => {
+                const msg = JSON.stringify({ type: "key", key: e.key });
+                ws.send(msg);
+            });
+        };
+    </script>
+</body>
+
+</html>
