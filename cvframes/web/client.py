@@ -1,3 +1,16 @@
+import importlib
+
+try:
+    importlib.import_module("aiohttp")
+except ImportError as e:
+    print(
+        "❌ Missing required dependency: aiohttp\n"
+        "➡️  Please install it with:\n\n"
+        "   pip install cv-frames[web]\n"
+    )
+    raise SystemExit(1) from e
+
+import importlib
 import select
 import socket
 from contextlib import contextmanager
