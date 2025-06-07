@@ -61,5 +61,3 @@ Example: Split side-by-side video into left/right frames
     for capture, (left, right) in iterate_sbs("sbs_video.mp4", oname="processed.mp4"):
         processed = do_something(left)
         capture.write(processed)
-
-----
