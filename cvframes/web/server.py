@@ -33,14 +33,20 @@ async def broadcast_task(
         frame = await frame_queue.get()
         async with clients_lock:
             to_remove = set()
+            tasks = []
             for ws in clients:
                 if ws.closed:
                     to_remove.add(ws)
                     continue
-                try:
-                    await ws.send_bytes(frame)
-                except Exception:
-                    to_remove.add(ws)
+
+                async def send(ws):
+                    try:
+                        await ws.send_bytes(frame)
+                    except Exception:
+                        to_remove.add(ws)
+
+                tasks.append(asyncio.create_task(send(ws)))
+            await asyncio.gather(*tasks, return_exceptions=True)
             for ws in to_remove:
                 clients.remove(ws)
         frame_queue.task_done()
