@@ -152,9 +152,9 @@ async def main(http_port: int, tcp_port: int):
     index = pkg_resources.files("cvframes.web.static").joinpath("index.html")
     static = pkg_resources.files("cvframes.web.static")
 
-    app.router.add_get("/", lambda request: web.FileResponse(index))
+    app.router.add_get("/", lambda request: web.FileResponse(str(index)))
     app.router.add_get("/ws", websocket_handler)
-    app.router.add_static("/static/", path=static, name="static")
+    app.router.add_static("/static/", path=str(static), name="static")
 
     runner = web.AppRunner(app)
     await runner.setup()
