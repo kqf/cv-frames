@@ -141,7 +141,6 @@ async def websocket_handler(request):
 
 async def main(http_port: int, tcp_port: int):
     app = web.Application()
-
     frame_queue: asyncio.Queue = asyncio.Queue()
     clients: set[web.WebSocketResponse] = set()
     clients_lock = asyncio.Lock()
@@ -156,11 +155,8 @@ async def main(http_port: int, tcp_port: int):
 
     # Get static paths relative to package
     index = pkg_resources.files("cvframes.web.static").joinpath("index.html")
-    static = pkg_resources.files("cvframes.web.static")
-
     app.router.add_get("/", lambda request: web.FileResponse(str(index)))
     app.router.add_get("/ws", websocket_handler)
-    app.router.add_static("/static/", path=str(static), name="static")
 
     runner = web.AppRunner(app)
     await runner.setup()
