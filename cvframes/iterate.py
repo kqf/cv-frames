@@ -55,7 +55,7 @@ def iterate_generic(
     count = start_frame
 
     if not capture.is_opened():
-        return
+        raise RuntimeError(f"Cannot open video file: {ipath}")
 
     try:
         while True:
