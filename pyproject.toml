@@ -32,13 +32,16 @@ description = "Read frames from OpenCV like humans"
 readme = "README.rst"
 
 dependencies = [
-    "opencv-python",
     "numpy",
     "click",
 ]
 
 [project.optional-dependencies]
 web = ["aiohttp"]
+opencv = ["opencv-python"]
+opencv-contrib = ["opencv-contrib-python"]
+opencv-headless = ["opencv-python-headless"]
+opencv-contrib-headless = ["opencv-contrib-python-headless"]
 
 [project.scripts]
 cv-frames = "cvframes.cli:main"

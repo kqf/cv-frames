@@ -23,6 +23,16 @@ Install via pip:
 
     pip install cv-frames
 
+If you install ``cv-frames`` standalone, you need to specify an OpenCV backend:
+
+.. code-block:: bash
+
+    pip install cv-frames[opencv]
+
+If ``cv-frames`` is part of a project that already depends on OpenCV
+(e.g. ``opencv-python`` or ``opencv-contrib-python`` is listed in your
+``requirements.txt``), no optional dependency is needed.
+
 ----
 
 Command Line Usage
