@@ -13,9 +13,10 @@ def main():
 
 @main.command(name="show")
 @click.argument("filepath", type=click.Path(exists=True))
-def show(filepath):
-    for i, (_, frame) in enumerate(iterate(filepath)):
-        print("Frame:", i)
+@click.option("--start-frame", type=int, default=0)
+def show(filepath, start_frame: int):
+    for i, (_, frame) in enumerate(iterate(filepath, start_frame=start_frame)):
+        click.echo(f"Frame: {i + start_frame}")
         cv2.imshow("cvframes-show", frame)
 
         # Wait for a key press and check if it's 'q' to exit
