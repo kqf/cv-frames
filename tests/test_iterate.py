@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 import cv2
 import numpy as np
@@ -31,7 +30,7 @@ def video(tmp_path: Path):
         Path("output.mp4"),
     ],
 )
-def test_iterate(video: Path, opath: Optional[Path]):
+def test_iterate(video: Path, opath: Path | None):
     # sourcery skip: no-loop-in-tests
     for capture, frame in iterate(video, opath=opath):
         capture.write(frame)
@@ -46,7 +45,7 @@ def test_iterate(video: Path, opath: Optional[Path]):
         Path("output.mp4"),
     ],
 )
-def test_iterate_sbs(video: Path, opath: Optional[Path]):
+def test_iterate_sbs(video: Path, opath: Path | None):
     # sourcery skip: no-loop-in-tests
     for capture, (lframe, rframe) in iterate_sbs(
         Path("input.mp4"), opath=opath
