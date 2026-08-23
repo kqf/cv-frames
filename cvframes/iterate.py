@@ -1,5 +1,6 @@
+from collections.abc import Callable, Generator
 from pathlib import Path
-from typing import Callable, Generator, Optional, Tuple, TypeVar, Union
+from typing import TypeVar
 
 import cv2
 import numpy as np
@@ -8,7 +9,7 @@ T = TypeVar("T")
 
 
 class IOCapture:
-    def __init__(self, source: Union[str, Path], oname: Union[str, Path] = ""):
+    def __init__(self, source: str | Path, oname: str | Path = ""):
         self.icap = cv2.VideoCapture(str(source))
         self.ocap = (
             cv2.VideoWriter(
@@ -27,7 +28,7 @@ class IOCapture:
     def is_opened(self) -> bool:
         return self.icap.isOpened()
 
-    def read(self) -> Tuple[bool, np.ndarray]:
+    def read(self) -> tuple[bool, np.ndarray]:
         return self.icap.read()
 
     def write(self, frame: np.ndarray) -> None:
@@ -45,11 +46,11 @@ class IOCapture:
 
 def iterate_generic(
     ipath: Path,
-    opath: Optional[Path],
+    opath: Path | None,
     start_frame: int,
     stop_frame: int,
     process_frames: Callable[[np.ndarray], T],
-) -> Generator[Tuple[IOCapture, T], None, None]:
+) -> Generator[tuple[IOCapture, T], None, None]:
     capture = IOCapture(str(ipath), oname=opath or "")
     capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     count = start_frame
@@ -73,10 +74,10 @@ def iterate_generic(
 
 def iterate(
     ipath: Path,
-    opath: Optional[Path] = None,
+    opath: Path | None = None,
     start_frame: int = -1,
     stop_frame: int = -1,
-) -> Generator[Tuple[IOCapture, np.ndarray], None, None]:
+) -> Generator[tuple[IOCapture, np.ndarray], None, None]:
     return iterate_generic(
         ipath,
         opath,
@@ -88,11 +89,11 @@ def iterate(
 
 def iterate_sbs(
     ipath: Path,
-    opath: Optional[Path] = None,
+    opath: Path | None = None,
     start_frame: int = -1,
     stop_frame: int = -1,
-) -> Generator[Tuple[IOCapture, Tuple[np.ndarray, np.ndarray]], None, None]:
-    def processor(frame: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+) -> Generator[tuple[IOCapture, tuple[np.ndarray, np.ndarray]], None, None]:
+    def processor(frame: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         _, width, _ = frame.shape
         mid = width // 2
         return frame[:, :mid, :], frame[:, mid:, :]
