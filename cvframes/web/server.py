@@ -24,6 +24,13 @@ MAPPING = {
 }
 
 
+async def send_frame(ws, frame: bytes, to_remove: set):
+    try:
+        await ws.send_bytes(frame)
+    except Exception:  # noqa: BLE001 - a broken client must not stop the rest
+        to_remove.add(ws)
+
+
 async def broadcast_task(
     frame_queue: asyncio.Queue,
     clients: set,
@@ -39,13 +46,9 @@ async def broadcast_task(
                     to_remove.add(ws)
                     continue
 
-                async def send(ws):
-                    try:
-                        await ws.send_bytes(frame)
-                    except Exception:
-                        to_remove.add(ws)
-
-                tasks.append(asyncio.create_task(send(ws)))
+                tasks.append(
+                    asyncio.create_task(send_frame(ws, frame, to_remove))
+                )
             await asyncio.gather(*tasks, return_exceptions=True)
             for ws in to_remove:
                 clients.remove(ws)
@@ -77,7 +80,7 @@ async def handle_tcp_connection(
                 buffer = buffer[end:]
                 await frame_queue.put(jpg)
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - report and close the socket
         print(f"[TCP] Error: {e}")
     finally:
         writer.close()
@@ -128,7 +131,7 @@ async def websocket_handler(request):
                 print(f"[WS] Error: {ws.exception()}")
                 break
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - report and drop the client
         print(f"[WS] Receive error: {e}")
 
     finally:
