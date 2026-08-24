@@ -17,7 +17,7 @@ class IOCapture:
     ):
         self.icap = cv2.VideoCapture(str(source))
         self.oname = str(oname) if oname else None
-        self.oshape: tuple[int, int] | None = None
+        self.oshape = oshape
         self._ocap: cv2.VideoWriter | None = None
 
     @property
