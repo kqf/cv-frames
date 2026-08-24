@@ -9,21 +9,39 @@ T = TypeVar("T")
 
 
 class IOCapture:
-    def __init__(self, source: str | Path, oname: str | Path = ""):
+    def __init__(
+        self,
+        source: str | Path,
+        oname: str | Path = "",
+        oshape: tuple[int, int] | None = None,
+    ):
         self.icap = cv2.VideoCapture(str(source))
-        self.ocap = (
-            cv2.VideoWriter(
-                str(oname),
+        self.oname = str(oname) if oname else None
+        self.oshape: tuple[int, int] | None = None
+        self._ocap: cv2.VideoWriter | None = None
+
+    @property
+    def ocap(self) -> cv2.VideoWriter | None:
+        if self.oname is None:
+            return None
+
+        if self.oshape is None:
+            return None
+
+        if self._ocap is None:
+            self._ocap = cv2.VideoWriter(
+                self.oname,
                 cv2.VideoWriter_fourcc(*"mp4v"),
                 self.icap.get(cv2.CAP_PROP_FPS),
-                (
-                    int(self.icap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                    int(self.icap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
-                ),
+                self.oshape,
             )
-            if oname
-            else None
-        )
+
+            if not self._ocap.isOpened():
+                raise RuntimeError(
+                    f"Cannot open output video file: {self.oname}"
+                )
+
+        return self._ocap
 
     def is_opened(self) -> bool:
         return self.icap.isOpened()
@@ -32,11 +50,26 @@ class IOCapture:
         return self.icap.read()
 
     def write(self, frame: np.ndarray) -> None:
+        height, width = frame.shape[:2]
+        shape = (width, height)
+
+        if self.oshape is None:
+            self.oshape = shape
+            return
+
+        if shape != self.oshape:
+            raise ValueError(
+                "All output frames must have the same resolution. "
+                f"Expected {self.oshape[0]}x{self.oshape[1]}, "
+                f"got {width}x{height}."
+            )
+
         if self.ocap is not None:
             self.ocap.write(frame)
 
     def release(self) -> None:
         self.icap.release()
+
         if self.ocap is not None:
             self.ocap.release()
 
