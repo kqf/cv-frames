@@ -55,7 +55,6 @@ class IOCapture:
 
         if self.oshape is None:
             self.oshape = shape
-            return
 
         if shape != self.oshape:
             raise ValueError(
@@ -86,21 +85,19 @@ def iterate_generic(
 ) -> Generator[tuple[IOCapture, T], None, None]:
     capture = IOCapture(str(ipath), oname=opath or "")
     capture.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-    count = start_frame
+    count = max(start_frame, 0)
 
     if not capture.is_opened():
         raise RuntimeError(f"Cannot open video file: {ipath}")
 
     try:
-        while True:
+        while stop_frame <= 0 or count < stop_frame:
             ret, frame = capture.read()
-            count += 1
             if not ret:
-                break
-            if stop_frame > 0 and count >= stop_frame:
                 break
 
             yield capture, process_frames(frame)
+            count += 1
     finally:
         capture.release()
 
