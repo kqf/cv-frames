@@ -7,49 +7,108 @@ import pytest
 from cvframes.iterate import iterate, iterate_sbs
 
 
+def count_frames(path: Path) -> int:
+    capture = cv2.VideoCapture(str(path))
+    count = 0
+
+    while True:
+        ret, _ = capture.read()
+        if not ret:
+            break
+        count += 1
+
+    capture.release()
+    return count
+
+
 @pytest.fixture
-def video(tmp_path: Path):
-    opath = tmp_path / "test_video.mp4"
-    ovideo = cv2.VideoWriter(
-        str(opath),
+def nframes() -> int:
+    return 5
+
+
+@pytest.fixture
+def shape() -> tuple[int, int]:
+    return 640, 480
+
+
+@pytest.fixture
+def video(tmp_path: Path, nframes: int, shape: tuple[int, int]) -> Path:
+    ipath = tmp_path / "input.mp4"
+    width, height = shape
+    ivideo = cv2.VideoWriter(
+        str(ipath),
         cv2.VideoWriter_fourcc(*"mp4v"),
         30,  # FPS
-        (640, 480),
+        shape,
     )
 
-    for _ in range(5):
-        ovideo.write(np.zeros((480, 640, 3), dtype=np.uint8))
-    ovideo.release()
-    return opath
+    for _ in range(nframes):
+        ivideo.write(np.zeros((height, width, 3), dtype=np.uint8))
+    ivideo.release()
+    return ipath
 
 
-@pytest.mark.parametrize(
-    "opath",
-    [
-        None,
-        Path("output.mp4"),
-    ],
-)
-def test_iterate(video: Path, opath: Path | None):
+@pytest.fixture(params=[False, True], ids=["no-output", "with-output"])
+def opath(request: pytest.FixtureRequest, tmp_path: Path) -> Path | None:
+    return tmp_path / "output.mp4" if request.param else None
+
+
+def test_iterate(
+    video: Path, opath: Path | None, nframes: int, shape: tuple[int, int]
+):
     # sourcery skip: no-loop-in-tests
+    width, height = shape
+    seen = 0
+
     for capture, frame in iterate(video, opath=opath):
         capture.write(frame)
-        assert frame.shape == (480, 640, 3)
+        assert frame.shape == (height, width, 3)
+        seen += 1
+
+    assert seen == nframes
 
 
-@pytest.mark.skip("skipping")
+def test_iterate_writes_every_frame(video: Path, tmp_path: Path, nframes: int):
+    # sourcery skip: no-loop-in-tests
+    opath = tmp_path / "output.mp4"
+
+    for capture, frame in iterate(video, opath=opath):
+        capture.write(frame)
+
+    assert count_frames(opath) == nframes
+
+
 @pytest.mark.parametrize(
-    "opath",
+    "start_frame, stop_frame, expected",
     [
-        None,
-        Path("output.mp4"),
+        (-1, -1, 5),
+        (2, -1, 3),
+        (0, 5, 5),
+        (0, 3, 3),
+        (2, 4, 2),
     ],
 )
-def test_iterate_sbs(video: Path, opath: Path | None):
+def test_iterate_range(
+    video: Path, start_frame: int, stop_frame: int, expected: int
+):
+    frames = list(
+        iterate(video, start_frame=start_frame, stop_frame=stop_frame)
+    )
+
+    assert len(frames) == expected
+
+
+def test_iterate_sbs(
+    video: Path, opath: Path | None, nframes: int, shape: tuple[int, int]
+):
     # sourcery skip: no-loop-in-tests
-    for capture, (lframe, rframe) in iterate_sbs(
-        Path("input.mp4"), opath=opath
-    ):
+    width, height = shape
+    seen = 0
+
+    for capture, (lframe, rframe) in iterate_sbs(video, opath=opath):
         capture.write(lframe)
-        assert lframe.shape == (480, 320, 3)
-        assert rframe.shape == (480, 320, 3)
+        assert lframe.shape == (height, width // 2, 3)
+        assert rframe.shape == (height, width // 2, 3)
+        seen += 1
+
+    assert seen == nframes
